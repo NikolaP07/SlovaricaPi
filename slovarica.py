@@ -1,6 +1,9 @@
 
 from guizero import App, PushButton, Picture,Drawing,Box,Text
 from pygame import mixer
+import wave
+from piper.voice import PiperVoice
+
 
 def Ispisitext(num,textarea:Text):
     print("Button was pressed  "+str( UiBox.children[1]))
@@ -21,8 +24,26 @@ def PustiPesmu():
     mixer.music.load("Pesma.mp3")
     mixer.music.set_volume(0.7)
     mixer.music.play()
+    
+def PiperPlay():
+    model_path = "sr_RS-serbski_institut-medium.onnx" # Replace with your .onnx file path
+    config_path = "sr_RS-serbski_institut-medium.onnx.json" # Replace with your .onnx.json file path
 
+    # Load the voice model
+    voice = PiperVoice.load(model_path, config_path=config_path)
 
+    text = "Mama."
+    output_wav_file = "output.wav"
+
+    # Synthesize the audio and save it to a WAV file
+    with wave.open(output_wav_file, "wb") as wav_file:
+        voice.synthesize_wav(text, wav_file)
+        
+    mixer.init() # Initialize the mixer module
+    sound = mixer.Sound('output.wav')
+    sound.play()
+
+    print(f"Audio saved to {output_wav_file}")
 
     
 Mod=2
@@ -44,8 +65,10 @@ appheight=round(app.height*0.125)
 UiBox= Box(app,align="top",width=app.width,height=appheight)
 
 PushButton(UiBox, image="Pesma.png",width=appwitdh,height=appheight,align="left",command=PustiPesmu)
-textarea=Text(UiBox,text="",align="left",width="fill",size=30,font="Helvetica")
+textarea=Text(UiBox,text="",align="left",width="fill",size=30,font="Helvetica",)
 PushButton(UiBox, image="Delete.png",width=appwitdh,height=appheight,command= izbrisitext ,align="left",args=[textarea])
+UiBox2= Box(app,align="top",width=app.width,height=appheight)
+PushButton(UiBox2, image="Delete.png",width=appwitdh,height=appheight,command= PiperPlay )
 slovaBox = Box(app,layout="grid",align="bottom",width=app.width,height=appheight*3.3)
 slovo=0
 for y in range(3):
